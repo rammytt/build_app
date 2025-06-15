@@ -20,28 +20,33 @@
   <div class="result" id="result"></div>
 
   <script>
-  async function generateIdeas() {
-    const topic = document.getElementById('topic').value;
-    const result = document.getElementById('result');
-    result.innerHTML = 'Thinking...';
+    async function generateIdeas() {
+      const topic = document.getElementById('topic').value;
+      const result = document.getElementById('result');
+      result.innerHTML = 'Guy,Hold on...';
 
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ topic })
-      });
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ topic })
+        });
 
-      const data = await response.json();
-      result.innerHTML = `<pre>${data.ideas}</pre>`;
-    } catch (error) {
-      result.innerHTML = 'Error fetching ideas.';
-      console.error('Fetch error:', error);
+        const data = await response.json();
+        if (data.ideas) {
+          result.innerHTML = `<pre>${data.ideas}</pre>`;
+        } else {
+          result.innerHTML = 'No ideas returned.';
+          console.log(data);
+        }
+      } catch (error) {
+        result.innerHTML = 'Error fetching ideas.';
+        console.error('Fetch error:', error);
+      }
     }
-  }
-</script>
+  </script>
 
 </body>
 </html>
