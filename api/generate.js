@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "openai/gpt-3.5-turbo", // or "anthropic/claude-3-sonnet"
+      model: "openai/gpt-3.5-turbo",
       messages: [
         { role: "system", content: "You are a viral content strategist for social media." },
         { role: "user", content: `Give me 3 short-form video ideas for this topic: ${topic}` }
@@ -17,10 +17,16 @@ export default async function handler(req, res) {
   });
 
   const data = await response.json();
+  console.log("OpenRouter response:", data);
 
-  if (data.choices) {
-    res.status(200).json({ ideas: data.choices[0].message.content });
-  } else {
-    res.status(500).json({ error: "No response from OpenRouter", details: data });
+  try {
+    const ideas = data.choices?.[0]?.message?.content;
+    if (ideas) {
+      res.status(200).json({ ideas });
+    } else {
+      res.status(500).json({ error: "No ideas returned", details: data });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 }
